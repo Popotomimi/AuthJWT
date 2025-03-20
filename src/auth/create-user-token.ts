@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const createUserToken = async (user, req, res) => {
+const createUserToken = async (user) => {
   const token = jwt.sing(
     {
       name: user.name,
@@ -9,11 +9,7 @@ const createUserToken = async (user, req, res) => {
     'popoto100200300',
   );
 
-  res.status(200).json({
-    message: 'Você está Logado',
-    token: token,
-    userId: user._id,
-  });
+  return { message: 'Você está autenticado', token: token, id: user._id };
 };
 
 module.exports = createUserToken;

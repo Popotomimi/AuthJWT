@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'src/users/users.module';
-import { DatabaseModule } from '../db/db'; // Caminho para o arquivo ajustado
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [
-    DatabaseModule, // Registra a conexão com o banco
-    UsersModule, // Registra o módulo Users
+    MongooseModule.forRoot(
+      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.zkgcy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
+    ),
+    UsersModule,
   ],
   controllers: [],
   providers: [],
