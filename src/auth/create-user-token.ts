@@ -1,15 +1,22 @@
-import jwt from 'jsonwebtoken';
+import jwt = require('jsonwebtoken');
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const createUserToken = async (user) => {
-  const token = jwt.sing(
+  const token = jwt.sign(
     {
       name: user.name,
       id: user._id,
     },
-    'popoto100200300',
+    `${process.env.SECRET}`,
   );
 
-  return { message: 'Você está autenticado', token: token, id: user._id };
+  return {
+    message: 'Você está autenticado',
+    token: token,
+    id: user._id,
+  };
 };
 
 module.exports = createUserToken;

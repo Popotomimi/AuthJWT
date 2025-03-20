@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
 const getToken = require('./get-token');
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const checkToken = (req, res, next) => {
   if (!req.headers.authorization) {
@@ -13,7 +16,7 @@ const checkToken = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, 'popoto100200300');
+    const verified = jwt.verify(token, `${process.env.SECRET}`);
     req.user = verified;
     next();
   } catch (error) {

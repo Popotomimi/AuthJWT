@@ -1,4 +1,7 @@
 import jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const User = require('../users/schema/user.schema');
 
@@ -7,7 +10,7 @@ const getUserByToken = async (token) => {
     throw new Error('Acesso negado!');
   }
 
-  const decoded = jwt.verify(token, 'popoto100200300');
+  const decoded = jwt.verify(token, `${process.env.SECRET}`);
 
   const userId = decoded.id;
 

@@ -18,6 +18,24 @@ const createUserToken = require('../auth/create-user-token');
 export class UsersService {
   constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
 
+  // Resgata todos os usuários
+  async findAll() {
+    const users = this.userModel.find().select('-password');
+
+    return users;
+  }
+
+  // Busca um usuário pelo ID, excluindo a senha
+  async findUserById(id: string): Promise<any> {
+    const user = await this.userModel.findById(id).select('-password');
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado!');
+    }
+
+    return user;
+  }
+
   // Registro de Usuário
   async register(createUserDto: CreateUserDto): Promise<{ message: string }> {
     if (
@@ -50,7 +68,7 @@ export class UsersService {
   }
 
   // Login
-  async login(createUserDto: CreateUserDto): Promise<void> {
+  async login(createUserDto: CreateUserDto): Promise<any> {
     if (!createUserDto.email || !createUserDto.password) {
       throw new NotFoundException('Preencha todos os campos');
     }
@@ -72,16 +90,51 @@ export class UsersService {
       throw new UnauthorizedException('Senha inválida');
     }
 
-    await createUserToken;
+    const userData = await createUserToken(user);
+
+    return {
+      message: userData.message,
+      token: userData.token,
+      id: userData.id,
+    };
   }
 
   // Atualização de Usuário
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
-    console.log(`Teste no método update. ID: ${id}`, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado!');
+    }
+
+    // Verifica se a senha está presente no objeto updateUserDto
+    if (updateUserDto.password) {
+      // Criptografa a nova senha
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
+
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      { $set: updateUserDto },
+      { new: true },
+    );
+
+    return {
+      message: 'Usuário atualizado com sucesso!',
+      user: updatedUser,
+    };
   }
 
   // Remoção de Usuário
-  async remove(id: string): Promise<void> {
-    console.log(`Teste no método remove. ID: ${id}`);
+  async remove(id: string): Promise<any> {
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
+      return { message: 'Usuário não encontrado!' };
+    }
+
+    await this.userModel.findByIdAndDelete(id);
+
+    return { message: 'Usuário removido com sucesso!' };
   }
 }
