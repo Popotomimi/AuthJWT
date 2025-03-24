@@ -16,6 +16,7 @@ const createUserToken = async (user) => {
     message: 'Você está autenticado',
     token: token,
     id: user._id,
+    name: user.name,
   };
 };
 

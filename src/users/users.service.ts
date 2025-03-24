@@ -68,7 +68,7 @@ export class UsersService {
       throw new NotFoundException('Preencha todos os campos');
     }
 
-    // Verificando se o usuário esta cadastrado no sistema
+    // Verificando se o usuário está cadastrado no sistema
     const user = await this.userModel.findOne({ email: createUserDto.email });
 
     if (!user) {
@@ -85,12 +85,14 @@ export class UsersService {
       throw new UnauthorizedException('Senha inválida');
     }
 
+    // Cria o token e retorna os dados necessários
     const userData = await createUserToken(user);
 
     return {
       message: userData.message,
       token: userData.token,
       id: userData.id,
+      name: user.name,
     };
   }
 
@@ -100,7 +102,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Usuário não encontrado!');
     }
-    return user; // Retorna o usuário sem a senha
+    return user;
   }
 
   // Update User
