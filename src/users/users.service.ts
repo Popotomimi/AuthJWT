@@ -25,17 +25,6 @@ export class UsersService {
     return users;
   }
 
-  // Busca um usuário pelo ID, excluindo a senha
-  async findUserById(id: string): Promise<any> {
-    const user = await this.userModel.findById(id).select('-password');
-
-    if (!user) {
-      throw new NotFoundException('Usuário não encontrado!');
-    }
-
-    return user;
-  }
-
   // Registro de Usuário
   async register(createUserDto: CreateUserDto): Promise<any> {
     if (
@@ -105,17 +94,24 @@ export class UsersService {
     };
   }
 
-  // Atualização de Usuário
+  // Pesquisa usuário pelo id
+  async findUserById(id: string): Promise<any> {
+    const user = await this.userModel.findById(id).select('-password');
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado!');
+    }
+    return user; // Retorna o usuário sem a senha
+  }
+
+  // Update User
   async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
     const user = await this.userModel.findById(id);
-
     if (!user) {
       throw new NotFoundException('Usuário não encontrado!');
     }
 
-    // Verifica se a senha está presente no objeto updateUserDto
+    // Criptografa a senha, se houver
     if (updateUserDto.password) {
-      // Criptografa a nova senha
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
