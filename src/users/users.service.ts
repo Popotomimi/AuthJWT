@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   // Registro de Usuário
-  async register(createUserDto: CreateUserDto): Promise<{ message: string }> {
+  async register(createUserDto: CreateUserDto): Promise<any> {
     if (
       !createUserDto.email ||
       !createUserDto.name ||
@@ -58,7 +58,13 @@ export class UsersService {
 
       await newUser.save();
 
-      return { message: 'Usuário Registrado com sucesso!' };
+      const userData = await createUserToken(newUser);
+
+      return {
+        message: `Bem vindo ${createUserDto.name}`,
+        token: userData.token,
+        id: userData.id,
+      };
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Email já está em uso.');
