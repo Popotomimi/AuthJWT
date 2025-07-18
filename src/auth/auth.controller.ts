@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 const createUserToken = require('./create-user-token');
 
@@ -6,7 +6,7 @@ const createUserToken = require('./create-user-token');
 export class AuthController {
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
+  async googleAuth(@Req() req, @Res() res: Response) {
     // Redireciona para autenticação do Google
   }
 
@@ -21,11 +21,8 @@ export class AuthController {
       email: user.email,
     });
 
-    return {
-      message: `Bem vindo ${user.name}`,
-      token: userData.token,
-      id: userData.id,
-      name: user.name,
-    };
+    const redirectUrl = `https://reactjwt.netlify.app/auth/google/callback?token=${userData.token}&name=${encodeURIComponent(user.name)}&email=${encodeURIComponent(user.email)}&id=${userData.id}`;
+
+    return res.redirect(redirectUrl);
   }
 }
