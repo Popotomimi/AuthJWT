@@ -25,6 +25,11 @@ export class UsersService {
     return users;
   }
 
+  // Pesquisa usuário pelo email
+  async findByEmail(email: string): Promise<UserDocument | null> {
+    return await this.userModel.findOne({ email }).exec();
+  }
+
   // Registro de Usuário
   async register(createUserDto: CreateUserDto): Promise<any> {
     if (

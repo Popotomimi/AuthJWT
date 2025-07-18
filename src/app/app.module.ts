@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from 'src/users/users.module';
+import { AuthModule } from 'src/auth/auth.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -11,6 +12,7 @@ dotenv.config();
       `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.zkgcy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
     ),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
