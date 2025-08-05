@@ -33,10 +33,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       throw new Error('Erro ao obter usuário após criação.');
     }
 
-    return {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-    };
+    return user;
   }
 }
