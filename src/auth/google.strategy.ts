@@ -21,6 +21,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const name = profile.displayName;
 
     let user = await this.usersService.findByEmail(email);
+
     if (!user) {
       user = await this.usersService.register({
         email,
@@ -33,6 +34,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       throw new Error('Erro ao obter usuário após criação.');
     }
 
-    return user;
+    const userAdaptado = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    };
+
+    return userAdaptado;
   }
 }
