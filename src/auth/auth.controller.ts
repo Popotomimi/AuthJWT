@@ -24,7 +24,7 @@ export class AuthController {
     };
 
     const userData = await createUserToken({
-      id: user.id,
+      id: user.id.toString(),
       name: user.name,
       email: user.email,
     });
