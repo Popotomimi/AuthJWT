@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 const createUserToken = require('./create-user-token');
 
@@ -9,25 +9,23 @@ export class AuthController {
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req: Request, @Res() res: Response) {
-    // Esse método é só usado para acionar o guard, não precisa lógica aqui
+    // Apenas aciona o guard do Google - sem lógica aqui
   }
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
-    console.log('Usuario recebido do GoogleStrategy:', req.user);
+    console.log('Usuário recebido do GoogleStrategy:', req.user);
 
-    const user = req.user as {
-      id: string;
-      name: string;
-      email: string;
+    const rawUser = req.user;
+
+    const user = {
+      _id: rawUser.id.toString(), // 👈 renomeado pra compatibilidade com o backend e frontend
+      name: rawUser.name,
+      email: rawUser.email,
     };
 
-    const userData = await createUserToken({
-      id: user.id.toString(),
-      name: user.name,
-      email: user.email,
-    });
+    const userData = await createUserToken(user);
 
     const redirectUrl = `https://reactjwt.netlify.app/auth/google/callback?token=${userData.token}&name=${encodeURIComponent(
       user.name,
