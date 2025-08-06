@@ -15,12 +15,10 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
-    console.log('Usuário recebido do GoogleStrategy:', req.user);
-
     const rawUser = req.user;
 
     const user = {
-      _id: rawUser.id.toString(), // 👈 renomeado pra compatibilidade com o backend e frontend
+      _id: rawUser.id.toString(),
       name: rawUser.name,
       email: rawUser.email,
     };
