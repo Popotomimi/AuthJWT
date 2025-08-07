@@ -1,4 +1,11 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Res,
+  UseGuards,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 
@@ -17,8 +24,16 @@ export class AuthController {
   async googleAuthRedirect(@Req() req: any, @Res() res: Response) {
     const rawUser = req.user;
 
+    console.log('Usuário recebido do Google:', rawUser);
+
+    if (!rawUser || !rawUser._id) {
+      throw new UnauthorizedException(
+        'Usuário do Google não possui ID válido.',
+      );
+    }
+
     const user = {
-      _id: rawUser.id.toString(),
+      _id: rawUser._id.toString(),
       name: rawUser.name,
       email: rawUser.email,
     };
