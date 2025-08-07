@@ -80,7 +80,6 @@ export class UsersService {
       const newUser = new this.userModel({
         email: googleUserDto.email,
         name: googleUserDto.name,
-        password: null,
         authProvider: 'google',
       });
 
