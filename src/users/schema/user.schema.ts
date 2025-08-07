@@ -19,7 +19,14 @@ export type UserDocument = Document & {
 
 export const UserSchema = new Schema<UserDocument>({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true, minlength: 8, maxlength: 100 },
+  password: {
+    type: String,
+    required: function () {
+      return this.authProvider === 'local';
+    },
+    minlength: 8,
+    maxlength: 100,
+  },
   name: { type: String, required: true },
   gender: { type: String, required: false },
   authProvider: {
