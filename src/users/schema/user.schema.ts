@@ -14,6 +14,7 @@ export type UserDocument = Document & {
   gender?: string;
   address?: Address;
   phone?: string;
+  authProvider: 'local' | 'google';
 };
 
 export const UserSchema = new Schema<UserDocument>({
@@ -21,6 +22,11 @@ export const UserSchema = new Schema<UserDocument>({
   password: { type: String, required: true, minlength: 8, maxlength: 100 },
   name: { type: String, required: true },
   gender: { type: String, required: false },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local',
+  },
   address: {
     street: { type: String, required: false },
     city: { type: String, required: false },

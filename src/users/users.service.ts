@@ -67,6 +67,40 @@ export class UsersService {
     }
   }
 
+  // Registro de usuário com Google
+  async googleRegister(googleUserDto: {
+    email: string;
+    name: string;
+  }): Promise<any> {
+    if (!googleUserDto.email || !googleUserDto.name) {
+      throw new NotFoundException('Preencha todos os campos');
+    }
+
+    try {
+      const newUser = new this.userModel({
+        email: googleUserDto.email,
+        name: googleUserDto.name,
+        password: null,
+        authProvider: 'google',
+      });
+
+      await newUser.save();
+
+      const userData = await createUserToken(newUser);
+
+      return {
+        message: `Bem vindo ${googleUserDto.name}`,
+        token: userData.token,
+        id: userData.id,
+      };
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('Email já está em uso.');
+      }
+      throw new Error(`Erro ao registrar usuário via Google: ${error.message}`);
+    }
+  }
+
   // Login
   async login(createUserDto: CreateUserDto): Promise<any> {
     if (!createUserDto.email || !createUserDto.password) {
@@ -78,6 +112,10 @@ export class UsersService {
 
     if (!user) {
       throw new UnauthorizedException('Usuário não cadastrado!');
+    }
+
+    if (user.authProvider === 'google') {
+      throw new UnauthorizedException('Este usuário deve logar com o Google');
     }
 
     // Verificando senha

@@ -23,10 +23,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     let user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      user = await this.usersService.register({
+      user = await this.usersService.googleRegister({
         email,
         name,
-        password: '',
       });
     }
 
