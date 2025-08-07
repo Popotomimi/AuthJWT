@@ -67,6 +67,7 @@ export class UsersService {
     }
   }
 
+  // Register with Google
   async googleRegister(googleUserDto: {
     email: string;
     name: string;
@@ -86,28 +87,22 @@ export class UsersService {
 
       const userData = await createUserToken(newUser);
 
-      // 🔍 Buscar o usuário completo no banco com lean()
       const userFromDb = await this.userModel
         .findById(userData.id)
         .select('_id name email')
         .lean();
 
-      // 🧪 Log para depuração
       console.log('Usuário do banco:', userFromDb);
 
-      // ✅ Verificação de dados essenciais
       if (!userFromDb || !userFromDb.name || !userFromDb.email) {
         throw new Error('Dados do usuário incompletos após registro.');
       }
 
       return {
-        message: `Bem vindo ${userFromDb.name}`,
+        _id: userFromDb._id,
+        name: userFromDb.name,
+        email: userFromDb.email,
         token: userData.token,
-        user: {
-          id: userFromDb._id,
-          name: userFromDb.name,
-          email: userFromDb.email,
-        },
       };
     } catch (error) {
       if (error.code === 11000) {
