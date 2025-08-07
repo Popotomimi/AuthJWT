@@ -98,7 +98,11 @@ export class UsersService {
       return {
         message: `Bem vindo ${userFromDb.name}`,
         token: userData.token,
-        id: userFromDb.id,
+        user: {
+          id: userFromDb._id,
+          name: userFromDb.name,
+          email: newUser.email,
+        },
       };
     } catch (error) {
       if (error.code === 11000) {
