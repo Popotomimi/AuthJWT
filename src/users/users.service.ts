@@ -67,7 +67,6 @@ export class UsersService {
     }
   }
 
-  // Registro de usuário com Google
   async googleRegister(googleUserDto: {
     email: string;
     name: string;
@@ -87,12 +86,18 @@ export class UsersService {
 
       const userData = await createUserToken(newUser);
 
+      // 🔍 Buscar o usuário completo no banco com lean()
       const userFromDb = await this.userModel
         .findById(userData.id)
-        .select('name _id');
+        .select('_id name email')
+        .lean();
 
-      if (!userFromDb) {
-        throw new NotFoundException('Usuário não encontrado após registro.');
+      // 🧪 Log para depuração
+      console.log('Usuário do banco:', userFromDb);
+
+      // ✅ Verificação de dados essenciais
+      if (!userFromDb || !userFromDb.name || !userFromDb.email) {
+        throw new Error('Dados do usuário incompletos após registro.');
       }
 
       return {
@@ -101,7 +106,7 @@ export class UsersService {
         user: {
           id: userFromDb._id,
           name: userFromDb.name,
-          email: newUser.email,
+          email: userFromDb.email,
         },
       };
     } catch (error) {
