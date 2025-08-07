@@ -87,10 +87,14 @@ export class UsersService {
 
       const userData = await createUserToken(newUser);
 
+      const userFromDb = await this.userModel
+        .findById(userData.id)
+        .select('name _id');
+
       return {
-        message: `Bem vindo ${googleUserDto.name}`,
+        message: `Bem vindo ${userFromDb.name}`,
         token: userData.token,
-        id: userData.id,
+        id: userFromDb.id,
       };
     } catch (error) {
       if (error.code === 11000) {
