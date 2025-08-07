@@ -91,6 +91,10 @@ export class UsersService {
         .findById(userData.id)
         .select('name _id');
 
+      if (!userFromDb) {
+        throw new NotFoundException('Usuário não encontrado após registro.');
+      }
+
       return {
         message: `Bem vindo ${userFromDb.name}`,
         token: userData.token,
