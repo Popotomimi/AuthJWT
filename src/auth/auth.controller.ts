@@ -31,4 +31,30 @@ export class AuthController {
 
     return res.redirect(redirectUrl);
   }
+
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  async githubAuth(@Req() req: Request, @Res() res: Response) {
+    // Apenas aciona o guard do GitHub
+  }
+
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  async githubAuthRedirect(@Req() req: any, @Res() res: Response) {
+    const rawUser = req.user;
+
+    const user = {
+      _id: rawUser.id.toString(),
+      name: rawUser.name,
+      email: rawUser.email,
+    };
+
+    const userData = await createUserToken(user);
+
+    const redirectUrl = `https://reactjwt.netlify.app/auth/github/callback?token=${userData.token}&name=${encodeURIComponent(
+      user.name,
+    )}&email=${encodeURIComponent(user.email)}&id=${userData.id}`;
+
+    return res.redirect(redirectUrl);
+  }
 }

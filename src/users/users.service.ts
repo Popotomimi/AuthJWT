@@ -112,6 +112,49 @@ export class UsersService {
     }
   }
 
+  // Register with GitHub
+  async githubRegister(githubUserDto: {
+    email: string;
+    name: string;
+  }): Promise<any> {
+    if (!githubUserDto.email || !githubUserDto.name) {
+      throw new NotFoundException('Preencha todos os campos');
+    }
+
+    try {
+      const newUser = new this.userModel({
+        email: githubUserDto.email,
+        name: githubUserDto.name,
+        authProvider: 'github',
+      });
+
+      await newUser.save();
+
+      const userData = await createUserToken(newUser);
+
+      const userFromDb = await this.userModel
+        .findById(userData.id)
+        .select('_id name email')
+        .lean();
+
+      if (!userFromDb || !userFromDb.name || !userFromDb.email) {
+        throw new Error('Dados do usuário incompletos após registro.');
+      }
+
+      return {
+        _id: userFromDb._id,
+        name: userFromDb.name,
+        email: userFromDb.email,
+        token: userData.token,
+      };
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('Email já está em uso.');
+      }
+      throw new Error(`Erro ao registrar usuário via GitHub: ${error.message}`);
+    }
+  }
+
   // Login
   async login(createUserDto: CreateUserDto): Promise<any> {
     if (!createUserDto.email || !createUserDto.password) {

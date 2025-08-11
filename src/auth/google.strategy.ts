@@ -34,7 +34,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     }
 
     const userAdaptado = {
-      id: String(user._id), // Aqui
+      id: String(user._id),
       name: user.name,
       email: user.email,
     };
