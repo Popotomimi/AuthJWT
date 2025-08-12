@@ -3,7 +3,7 @@ import { Strategy } from 'passport-facebook';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 
-// Callback em DEV:  https://authjwt-aqoe.onrender.com/auth/facebook/callback
+// Callback em DEV: http://localhost:3000/auth/facebook/callback
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
@@ -11,7 +11,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     super({
       clientID: process.env.FACEBOOK_CLIENT_ID as string,
       clientSecret: process.env.FACEBOOK_SECRET as string,
-      callbackURL: 'http://localhost:3000/auth/facebook/callback',
+      callbackURL: 'https://authjwt-aqoe.onrender.com/auth/facebook/callback',
       profileFields: ['id', 'displayName', 'emails'],
       scope: ['email'],
     });
